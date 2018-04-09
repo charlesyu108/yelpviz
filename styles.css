@@ -1,0 +1,41 @@
+svg{
+  border: 1px solid black;
+  float: left;
+}
+
+.pinned {
+  min-height: 50px;
+  width: 80%;
+  padding: 10%;
+  border: 1px solid black;
+}
+.pinned * {
+  display: block;
+}
+
+.pinned rating::before{
+  content: "Rating: ";
+  font-style:italic;
+}
+
+.pinned cats::before{
+  content: "Categories: ";
+  font-style:italic;
+}
+
+.pinned snippet::before{
+  content: "Review snippet: ";
+  font-style:italic;
+}
+
+.pinned title {
+  font-size: 1.5em;
+}
+
+
+#pinDiv {
+  float: right;
+  width:500px;
+  height:500px;
+  border: 1px solid black;
+}
