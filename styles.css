@@ -43,3 +43,10 @@ svg{
   height:500px;
   border: 1px solid black;
 }
+
+/* TODO: TEST styles -- delete? */
+.polygons {
+  fill: none;
+  stroke: white;
+  stroke-width: 1px;
+}

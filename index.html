@@ -8,30 +8,29 @@
 </head>
 
 <body>
-<div>
-  <svg id="map_svg"/>
+  <div>
+    <svg id="map_svg" />
 
-  <div id="pinDiv">
-    <b> Pinned Places </b>
-    <!-- TODO: Delete before final submission-->
-    <div class="pinned">
-      <title> SAMPLE: Wheelhouse </title>
-      <addr> 63 Broad St, Financial District, Boston, MA 02109 </addr>
-      <hr>
-      <cats> Breakfast & Brunch, Burgers, Sandwiches</cats>
-      <rating> 4.5 </rating>
-      <snippet> After going to Wheelhouse, you'll never order a Dunkin Donuts' breakfast sandwich ever again. Well, you might, but you won't enjoy it. This place has the...</snippet>
+    <div id="pinDiv">
+      <b> Pinned Places </b>
+      <!-- TODO: Delete before final submission-->
+      <div class="pinned">
+        <title> SAMPLE: Wheelhouse </title>
+        <addr> 63 Broad St, Financial District, Boston, MA 02109 </addr>
+        <hr>
+        <cats> Breakfast & Brunch, Burgers, Sandwiches</cats>
+        <rating> 4.5 </rating>
+        <snippet> After going to Wheelhouse, you'll never order a Dunkin Donuts' breakfast sandwich ever again. Well, you might, but you won't enjoy it. This place has the...</snippet>
+      </div>
     </div>
   </div>
-</div>
 </body>
 
 <script>
-
   var width = 800;
   var height = 600;
 
-  const radius = 10;
+  const radius = 5;
 
   var svg = d3.select("#map_svg")
     .attr("width", width)
@@ -40,8 +39,8 @@
   var g = svg.append("g");
 
   var tooltip = d3.select("body")
-      .append("div")
-      .attr("class", "tooltip");
+    .append("div")
+    .attr("class", "tooltip");
 
   var projection = d3.geoMercator()
     .center([-71.0589, 42.3201])
@@ -51,7 +50,7 @@
   const geopath = d3.geoPath()
     .projection(projection);
 
-// TODO: Replace this with some nice graphic or icon
+  // TODO: Replace this with some nice graphic or icon
   svg.append("text")
     .attr("x", 50)
     .attr("y", 50)
@@ -80,12 +79,13 @@
       d["latitude"] = Number(d["latitude"]);
       d["location"] = JSON.parse(d["location"]);
       d["categories"] = JSON.parse(d["categories"]).map(x => x[0]);
+      [d["x_proj"], d["y_proj"]] = projection([d.longitude, d.latitude]);
     });
 
     // Pan and Zoom Actions
     svg.call(d3.zoom()
-      .scaleExtent([1,20]) // [x-times out-zoom, x-times in-zoom]
-      .on("zoom", function () {
+      .scaleExtent([1, 20]) // [x-times out-zoom, x-times in-zoom]
+      .on("zoom", function() {
 
         var scale = 1;
         var scalere = /scale\((\d.*\d*)+\)/
@@ -101,7 +101,9 @@
 
         // TODO: may want to remove?
         g.selectAll("circle")
-          .attr("r", radius/scale);
+          .attr("r", radius / scale);
+        g.selectAll(".polygons")
+          .style("stroke-width", 1 / scale);
       }));
 
     g.selectAll(".district")
@@ -113,11 +115,32 @@
       .attr("class", "district")
       .attr("d", geopath);
 
+    var voronoi = d3.voronoi()
+      .extent([[-1, -1],[width + 1, height + 1]]);
+
+    var sites = restaurants.map(d => [d.x_proj, d.y_proj]);
+
+    g.append("g")
+      .attr("class", "polygons")
+      .selectAll("path")
+      .data(voronoi.polygons(sites))
+      .enter()
+      .append("path")
+      .call(redrawPolygon);
+
+    // g.append('g')
+    //   .attr("class", "links")
+    //   .selectAll("line")
+    //   .data(voronoi.links(sites))
+    //   .enter().append("line")
+    //   .call(redrawLink);
+
+
     g.selectAll("circle")
       .data(restaurants).enter()
       .append("circle")
-      .attr("cx", (d, i) => projection([d.longitude, d.latitude])[0])
-      .attr("cy", (d, i) => projection([d.longitude, d.latitude])[1])
+      .attr("cx", d => d.x_proj)
+      .attr("cy", d => d.y_proj)
       .attr("r", radius)
       .style("fill", "red")
       .style("opacity", 0.6)
@@ -128,21 +151,21 @@
     function mouseoverActions(d) {
 
       tooltip
-      .html(d.name)
-      .style("display", "block")
-      .style("left", d3.event.clientX + "px")
-      .style("top", d3.event.clientY + "px");
+        .html(d.name)
+        .style("display", "block")
+        .style("left", d3.event.clientX + "px")
+        .style("top", d3.event.clientY + "px");
     }
 
     function mouseoutActions(d) {
       tooltip
-      .style("display", "none");
+        .style("display", "none");
     }
 
-    function clickActions(d){
+    function clickActions(d) {
       console.log(d);
       d3.select("#pinDiv")
-      .html(d3.select("#pinDiv").html() + makePinnable(d));
+        .html(d3.select("#pinDiv").html() + makePinnable(d));
     }
 
     console.log(restaurants);
@@ -160,6 +183,31 @@
       </div>
       `
     }
+
+    // This function is from: https://bl.ocks.org/mbostock/4060366
+    function redrawPolygon(polygon) {
+      polygon
+        .attr("d", function(d) {
+          return d ? "M" + d.join("L") + "Z" : null;
+        });
+    }
+
+    function redrawLink(link) {
+      link
+        .attr("x1", function(d) {
+          return d.source[0];
+        })
+        .attr("y1", function(d) {
+          return d.source[1];
+        })
+        .attr("x2", function(d) {
+          return d.target[0];
+        })
+        .attr("y2", function(d) {
+          return d.target[1];
+        });
+    }
+
 
   }
 </script>
