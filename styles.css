@@ -32,6 +32,10 @@ svg{
   font-size: 1.5em;
 }
 
+.tooltip {
+  position: absolute;
+}
+
 
 #pinDiv {
   float: right;
