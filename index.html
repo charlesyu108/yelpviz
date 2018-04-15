@@ -10,7 +10,7 @@
 <body>
   <div>
     <svg id="map_svg" />
-
+    <button id = "test"> jiggle </button>
     <div id="pinDiv">
       <b> Pinned Places </b>
       <!-- TODO: Delete before final submission-->
@@ -57,6 +57,12 @@
     .style("stroke", "black")
     .text("Pan & Zoom to explore")
 
+  var zoomlbl = svg.append("text")
+    .attr("x", 210)
+    .attr("y", 50)
+    .style("stroke", "black")
+    .text("100%")
+
   d3.queue()
     .defer(d3.csv, "data/yelp_cats_boston.fixed.csv")
     .defer(d3.json, "data/boston.geojson")
@@ -72,22 +78,44 @@
     // Filter reduces restaurant numbers from 343 to 254
     restaurants = restaurants.filter(d => noneOf.indexOf(d.neighborhood) == -1);
 
+    // Cleaning up the raw data
     restaurants.forEach(function(d) {
       d["rating"] = Number(d["rating"]);
-      d["review count"] = Number(d["review count"]);
+      d["review_count"] = Number(d["review_count"]);
       d["longitude"] = Number(d["longitude"]);
       d["latitude"] = Number(d["latitude"]);
       d["location"] = JSON.parse(d["location"]);
       d["categories"] = JSON.parse(d["categories"]).map(x => x[0]);
       [d["x_proj"], d["y_proj"]] = projection([d.longitude, d.latitude]);
+      delete d["search category"];
     });
 
+    // Removing duplicate entries - reduces from 254 to 212
+    var uniqueRestaurants = [];
+
+    restaurants.forEach(function(d){
+      var conflicts = uniqueRestaurants.filter(x => (x.name == d.name && x.latitude == d.latitude && x.longitude == d.longitude))
+      if (conflicts.length == 0){
+        uniqueRestaurants.push(d);
+      }
+    });
+
+    restaurants = uniqueRestaurants;
+
+    var voronoi = d3.voronoi()
+      .extent([[-1, -1],[width + 1, height + 1]]);
+
+    var polygons = voronoi.polygons(restaurants.map(d => [d.x_proj, d.y_proj]));
+
+    restaurants.forEach((d,i) => d["voronoi"] = polygons[i]);
+
+    var scale = 1;
     // Pan and Zoom Actions
     svg.call(d3.zoom()
-      .scaleExtent([1, 20]) // [x-times out-zoom, x-times in-zoom]
+      .scaleExtent([1, 30]) // [x-times out-zoom, x-times in-zoom]
       .on("zoom", function() {
 
-        var scale = 1;
+
         var scalere = /scale\((\d.*\d*)+\)/
 
         // TODO: TEST CODE TO REMOVE?
@@ -102,9 +130,22 @@
         // TODO: may want to remove?
         g.selectAll("circle")
           .attr("r", radius / scale);
-        g.selectAll(".polygons")
+
+        g.selectAll("path")
           .style("stroke-width", 1 / scale);
+
+        zoomlbl.text(Math.round(scale * 100) + "%");
+
       }));
+
+    // TODO delete
+    d3.select("#test").on("click", function(){
+      g.selectAll("circle")
+      // .attr("cx", d => console.log(d));
+      // .attr("cy", );
+        .attr("cx", (x => Math.random()*radius/scale + x.x_proj))
+        .attr("cy", (x => Math.random()*radius/scale + x.y_proj));
+    });
 
     g.selectAll(".district")
       .data(geojson.features)
@@ -115,30 +156,18 @@
       .attr("class", "district")
       .attr("d", geopath);
 
-    var voronoi = d3.voronoi()
-      .extent([[-1, -1],[width + 1, height + 1]]);
-
-    var sites = restaurants.map(d => [d.x_proj, d.y_proj]);
-
-    g.append("g")
-      .attr("class", "polygons")
-      .selectAll("path")
-      .data(voronoi.polygons(sites))
-      .enter()
-      .append("path")
-      .call(redrawPolygon);
-
-    // g.append('g')
-    //   .attr("class", "links")
-    //   .selectAll("line")
-    //   .data(voronoi.links(sites))
-    //   .enter().append("line")
-    //   .call(redrawLink);
-
+    // g.append("g")
+    //   .attr("class", "polygons")
+    //   .selectAll("path")
+    //   .data(restaurants)
+    //   .enter()
+    //   .append("path")
+    //   .call(drawPolygon);
 
     g.selectAll("circle")
       .data(restaurants).enter()
       .append("circle")
+      .attr("class", "restaurant")
       .attr("cx", d => d.x_proj)
       .attr("cy", d => d.y_proj)
       .attr("r", radius)
@@ -185,26 +214,11 @@
     }
 
     // This function is from: https://bl.ocks.org/mbostock/4060366
-    function redrawPolygon(polygon) {
+    function drawPolygon(polygon) {
+      console.log(polygon);
       polygon
         .attr("d", function(d) {
-          return d ? "M" + d.join("L") + "Z" : null;
-        });
-    }
-
-    function redrawLink(link) {
-      link
-        .attr("x1", function(d) {
-          return d.source[0];
-        })
-        .attr("y1", function(d) {
-          return d.source[1];
-        })
-        .attr("x2", function(d) {
-          return d.target[0];
-        })
-        .attr("y2", function(d) {
-          return d.target[1];
+          return d.voronoi ? "M" + d.voronoi.join("L") + "Z" : null;
         });
     }
 
