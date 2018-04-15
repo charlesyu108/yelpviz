@@ -10,19 +10,28 @@
 <body>
   <div>
     <svg id="map_svg" />
-    <button id = "test"> jiggle </button>
+    <button id="test"> jiggle </button>
     <div id="pinDiv">
-      <b> Pinned Places </b>
+      <div id = "pinDivHeader">
+         <b> Pinned Places </b> <span id = "pinnedCount"> (0) </span>
+       </div>
+
       <!-- TODO: Delete before final submission-->
+      <div class ="pinnedInfo">
+        <button onclick = "deleteDiv(this)"> x </button>
       <div class="pinned">
-        <title> SAMPLE: Wheelhouse </title>
-        <addr> 63 Broad St, Financial District, Boston, MA 02109 </addr>
-        <hr>
-        <cats> Breakfast & Brunch, Burgers, Sandwiches</cats>
-        <rating> 4.5 </rating>
-        <snippet> After going to Wheelhouse, you'll never order a Dunkin Donuts' breakfast sandwich ever again. Well, you might, but you won't enjoy it. This place has the...</snippet>
+        <div class="info">
+          <title> SAMPLE: Wheelhouse </title>
+          <addr> 63 Broad St, Financial District, Boston, MA 02109 </addr>
+          <hr>
+          <cats> Breakfast & Brunch, Burgers, Sandwiches</cats>
+          <rating> 4.5 </rating>
+          <snippet> After going to Wheelhouse, you'll never order a Dunkin Donuts' breakfast sandwich ever again. Well, you might, but you won't enjoy it. This place has the...</snippet>
+        </div>
       </div>
     </div>
+    <!-- TODO: Delete before final submission-->
+  </div>
   </div>
 </body>
 
@@ -30,7 +39,7 @@
   var width = 800;
   var height = 600;
 
-  const radius = 5;
+  const radius = 7;
 
   var svg = d3.select("#map_svg")
     .attr("width", width)
@@ -92,29 +101,30 @@
 
     // Removing duplicate entries - reduces from 254 to 212
     var uniqueRestaurants = [];
-
-    restaurants.forEach(function(d){
+    restaurants.forEach(function(d) {
       var conflicts = uniqueRestaurants.filter(x => (x.name == d.name && x.latitude == d.latitude && x.longitude == d.longitude))
-      if (conflicts.length == 0){
+      if (conflicts.length == 0) {
         uniqueRestaurants.push(d);
       }
     });
-
     restaurants = uniqueRestaurants;
 
+    // Assigning voronoi regions for each restaurant
     var voronoi = d3.voronoi()
-      .extent([[-1, -1],[width + 1, height + 1]]);
-
+      .extent([
+        [-1, -1],
+        [width + 1, height + 1]
+      ]);
     var polygons = voronoi.polygons(restaurants.map(d => [d.x_proj, d.y_proj]));
+    restaurants.forEach((d, i) => d["voronoi"] = polygons[i]);
 
-    restaurants.forEach((d,i) => d["voronoi"] = polygons[i]);
-
+    // Scale factor of zoom
     var scale = 1;
+
     // Pan and Zoom Actions
     svg.call(d3.zoom()
       .scaleExtent([1, 30]) // [x-times out-zoom, x-times in-zoom]
       .on("zoom", function() {
-
 
         var scalere = /scale\((\d.*\d*)+\)/
 
@@ -138,13 +148,11 @@
 
       }));
 
-    // TODO delete
-    d3.select("#test").on("click", function(){
+    // TODO delete? Jiggle button effect
+    d3.select("#test").on("click", function() {
       g.selectAll("circle")
-      // .attr("cx", d => console.log(d));
-      // .attr("cy", );
-        .attr("cx", (x => Math.random()*radius/scale + x.x_proj))
-        .attr("cy", (x => Math.random()*radius/scale + x.y_proj));
+        .attr("cx", (x => Math.random() * radius / scale + x.x_proj))
+        .attr("cy", (x => Math.random() * radius / scale + x.y_proj));
     });
 
     g.selectAll(".district")
@@ -171,8 +179,6 @@
       .attr("cx", d => d.x_proj)
       .attr("cy", d => d.y_proj)
       .attr("r", radius)
-      .style("fill", "red")
-      .style("opacity", 0.6)
       .on("mouseover", mouseoverActions)
       .on("mouseout", mouseoutActions)
       .on("click", clickActions)
@@ -180,7 +186,7 @@
     function mouseoverActions(d) {
 
       tooltip
-        .html(d.name)
+        .html(makeInfo(d))
         .style("display", "block")
         .style("left", d3.event.clientX + "px")
         .style("top", d3.event.clientY + "px");
@@ -194,21 +200,32 @@
     function clickActions(d) {
       console.log(d);
       d3.select("#pinDiv")
-        .html(d3.select("#pinDiv").html() + makePinnable(d));
+        .html(d3.select("#pinDiv").html() + makePinnedInfo(d));
+      d3.select("#pinnedCount")
+      .html("(" + (document.getElementById("pinDiv").children.length - 1) + ")");
     }
 
     console.log(restaurants);
     console.log(geojson);
 
-    function makePinnable(d) {
+    function makeInfo(d) {
       return `
-      <div class="pinned">
+      <div class="info">
         <title> ${d.name} </title>
         <addr> ${d.location.display_address.reduce( (a,b) => a+", "+b)} </addr>
         <hr>
         <cats> ${d.categories.reduce( (a,b) => a+", "+b)} </cats>
         <rating> ${d.rating} </rating>
         <snippet> ${d.snippet_text} </snippet>
+      </div>
+      `
+    }
+
+    function makePinnedInfo(d){
+      return `
+      <div class = "pinnedInfo">
+        <button onclick="deleteDiv(this)"> x </button>
+        ${makeInfo(d)}
       </div>
       `
     }
@@ -221,9 +238,15 @@
           return d.voronoi ? "M" + d.voronoi.join("L") + "Z" : null;
         });
     }
-
-
   }
+
+  function deleteDiv(button){
+    d3.select(button.parentNode).remove();
+    d3.select("#pinnedCount")
+    .html("(" + (document.getElementById("pinDiv").children.length - 1) + ")");
+  }
+
+
 </script>
 
 

@@ -3,44 +3,59 @@ svg{
   float: left;
 }
 
-.pinned {
+.tooltip {
+  max-width: 400px;
+  position: absolute;
+  background: rgba(200, 54, 54, 0.8);
+}
+
+/* restaurant circle styles */
+.restaurant{
+  fill: red;
+  opacity: 0.6;
+}
+
+/* BEGIN restaurant information div styles */
+.info {
   min-height: 50px;
   width: 80%;
   padding: 10%;
-  border: 1px solid black;
 }
-.pinned * {
+.info * {
   display: block;
 }
 
-.pinned rating::before{
+.info rating::before{
   content: "Rating: ";
   font-style:italic;
 }
 
-.pinned cats::before{
+.info cats::before{
   content: "Categories: ";
   font-style:italic;
 }
 
-.pinned snippet::before{
+.info snippet::before{
   content: "Review snippet: ";
   font-style:italic;
 }
 
-.pinned title {
+.info title {
   font-size: 1.5em;
 }
+/* END restaurant information div styles */
 
-.tooltip {
-  position: absolute;
+
+.pinnedInfo {
+  border: 1px solid black;
 }
 
-
+/* Pinned restaurants div styles */
 #pinDiv {
   float: right;
+  overflow: scroll;
   width:500px;
-  height:500px;
+  height:800px;
   border: 1px solid black;
 }
 
