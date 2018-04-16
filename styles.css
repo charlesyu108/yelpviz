@@ -78,3 +78,7 @@ svg{
   stroke: white;
   stroke-width: 1px;
 }
+
+.search-bar {
+  width: 400px;
+}
