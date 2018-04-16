@@ -113,6 +113,17 @@
     });
     restaurants = uniqueRestaurants;
 
+    // Obtaining list of categories
+    var categories = Array.from(new Set(
+      restaurants.map(d => d.categories)
+      .reduce( (a,b) => a.concat(b))
+    ));
+
+    // Obtaining list of neighborhoods
+    var neighborhoods = Array.from(new Set(
+      restaurants.map(d => d.neighborhood)
+    ));
+
     // Assigning voronoi regions for each restaurant
     var voronoi = d3.voronoi()
       .extent([
@@ -260,6 +271,7 @@
           return d.voronoi ? "M" + d.voronoi.join("L") + "Z" : null;
         });
     }
+
   }
 
   function deleteDiv(button){
