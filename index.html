@@ -10,7 +10,6 @@
 <body>
   <div>
     <svg id="map_svg" />
-    <button id="test"> jiggle </button>
     <div id="pinDiv">
       <div id = "pinDivHeader">
          <b> Pinned Places </b> <span id = "pinnedCount"> (0) </span>
@@ -22,7 +21,7 @@
       <div class="pinned">
         <div class="info">
           <title> SAMPLE: Wheelhouse </title>
-          <addr> 63 Broad St, Financial District, Boston, MA 02109 </addr>
+          <addr> 63 Broad St, Boston, MA 02109 </addr>
           <hr>
           <cats> Breakfast & Brunch, Burgers, Sandwiches</cats>
           <rating> 4.5 </rating>
@@ -32,6 +31,7 @@
     </div>
     <!-- TODO: Delete before final submission-->
   </div>
+    <button id="test"> jiggle </button>
   </div>
 </body>
 
@@ -47,6 +47,7 @@
   var height = 600;
 
   const radius = 7;
+  const districtLabelFontSz = 20;
 
   var svg = d3.select("#map_svg")
     .attr("width", width)
@@ -70,13 +71,11 @@
   svg.append("text")
     .attr("x", 50)
     .attr("y", 50)
-    .style("stroke", "black")
     .text("Pan & Zoom to explore")
 
   var zoomlbl = svg.append("text")
     .attr("x", 210)
     .attr("y", 50)
-    .style("stroke", "black")
     .text("100%")
 
   d3.queue()
@@ -151,6 +150,9 @@
         g.selectAll("path")
           .style("stroke-width", 1 / scale);
 
+        g.selectAll(".districtLabel")
+          .style("font-size", districtLabelFontSz / scale);
+
         zoomlbl.text(Math.round(scale * 100) + "%");
 
       }));
@@ -162,7 +164,7 @@
         .attr("cy", (x => Math.random() * radius / scale + x.y_proj));
     });
 
-    g.selectAll(".district")
+    var districts = g.selectAll(".district")
       .data(geojson.features)
       .enter()
       .append("path")
@@ -171,12 +173,27 @@
       .attr("class", "district")
       .attr("d", geopath);
 
+    console.log(d3.selectAll(".district"));
+
+    g.selectAll(".districtLabel")
+      .data(geojson.features)
+      .enter()
+      .append("text")
+      .attr("x", d => geopath.centroid(d)[0])
+      .attr("y", d => geopath.centroid(d)[1])
+      .text(d => d.properties.name)
+      .attr("class", "districtLabel")
+      .style("font-size", districtLabelFontSz);
+
+    // var color = d3.scaleOrdinal(d3.schemeCategory20);
     // g.append("g")
     //   .attr("class", "polygons")
     //   .selectAll("path")
     //   .data(restaurants)
     //   .enter()
     //   .append("path")
+    //   .style("opacity", 0.3)
+    //   .style("fill", (d,i) => color(i))
     //   .call(drawPolygon);
 
     g.selectAll("circle")
