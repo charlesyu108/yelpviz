@@ -15,6 +15,14 @@ svg{
   opacity: 0.6;
 }
 
+.district{
+
+}
+
+.districtLabel{
+
+}
+
 /* BEGIN restaurant information div styles */
 .info {
   min-height: 50px;
@@ -52,11 +60,16 @@ svg{
 
 /* Pinned restaurants div styles */
 #pinDiv {
-  float: right;
+  margin-left: 820px;
   overflow: scroll;
   width:500px;
-  height:800px;
+  height:600px;
   border: 1px solid black;
+}
+
+#pinDivHeader {
+  font-size: 1.5em;
+  border-bottom: 1px solid black;
 }
 
 /* TODO: TEST styles -- delete? */
