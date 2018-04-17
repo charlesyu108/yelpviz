@@ -1,20 +1,20 @@
 
-h1 {
+/*h1 {
   font-family: 'Georgia';
   text-align: center;
   padding-top: 150px;
   font-size: 48px;
   position: center;
-}
+}*/
 
-p {
+/*p {
   color: gray;
   padding-top: 10px;
   padding-right: 10px;
   padding-left: 100px;
-}
+}*/
 
-#title-caption {
+/*#title-caption {
   text-align: center;
 }
 
@@ -27,17 +27,16 @@ p {
   display: inline;
   padding: 10px;
   color: white;
-}
+}*/
 
-.row {
+/*.row {
   margin-bottom: 50px;
 }
-
+*/
 
 svg{
   border: 1px solid black;
   float: left;
-
 }
 
 .viz {
@@ -52,7 +51,7 @@ svg{
 }
 
 /* restaurant circle styles */
-.restaurant{
+.restaurant {
   fill: red;
   opacity: 0.6;
 }
@@ -71,13 +70,14 @@ svg{
   width: 80%;
   padding: 10%;
 }
+
 .info * {
   display: block;
 }
 
 .info rating::before{
   content: "Rating: ";
-  font-style:italic;
+  font-style: italic;
 }
 
 .info cats::before{
@@ -113,7 +113,7 @@ svg{
   font-size: 1.5em;
   font-family: 'Georgia', 'serif';
   font-weight: lighter;
-  /**border-bottom: 1px solid black;**/
+  border-bottom: 1px solid black;
 }
 
 /* TODO: TEST styles -- delete? */
@@ -123,8 +123,5 @@ svg{
   stroke-width: 1px;
 }
 
-body {
-  font-family: "Helvetica Neue", "sans-serif";
-}
 
 

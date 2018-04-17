@@ -3,34 +3,12 @@
 
 <head>
   <title>INFO 4310 HW4</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
   <script src="https://d3js.org/d3.v4.min.js"></script>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-  <link href="https://fonts.googleapis.com/css?family=Playfair+Display|Roboto" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Cormorant+Garamond|EB+Garamond" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="styles.css"/>
 </head>
 
 <body>
-<div class="container title">
-  <h1>Gastronomia Boston</h1>
-  <p id="title-caption">Find the best eats in town.</p>
-</div>
-
-  <!-- <div class="dropdown">
-    <button class="dropbtn">Choose a location</button>
-    <div class="dropdown-options">
-
-    </div>
-  </div> -->
-
-  <!--dropdown-->
-    <div class="row location">
-        <p id="location_header">Choose a location: </p>
-        <select id="dropdown"></select>
-      </div>
-    </div>
-
-  <div class="viz">
+  <div>
     <svg id="map_svg" />
     <div id="pinDiv">
       <div id = "pinDivHeader">
@@ -55,18 +33,27 @@
   </div>
     <button id="test"> jiggle </button>
   </div>
-
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 </body>
+
+  <h1>Where to Eat in Boston</h1>
+
+  <div class="dropdown">
+    <button class="dropbtn">Choose a location</button>
+    <div class="dropdown-options">
+    </div>
+  </div>
+  
+<!-- <div id="search-bar-id">
+<input class="search-bar" type="text" placeholder="Search a cuisine type or restaurant name'&hellip;">
+<button class="search-button" type="submit" >Search</button>
+</div> -->
 
 <script>
   var width = 800;
   var height = 600;
 
   const radius = 7;
-  const districtLabelFontSz = 12;
+  const districtLabelFontSz = 20;
 
   var svg = d3.select("#map_svg")
     .attr("width", width)
@@ -86,16 +73,15 @@
   const geopath = d3.geoPath()
     .projection(projection);
 
-  svg.append("svg:image")
+  // TODO: Replace this with some nice graphic or icon
+  svg.append("text")
     .attr("x", 50)
     .attr("y", 50)
-    .attr('width', "30px")
-    .attr("xlink:href", "media/zoom-in.png")
-    // .text("Pan & Zoom to explore")
+    .text("Pan & Zoom to explore")
 
   var zoomlbl = svg.append("text")
-    .attr("x", 90)
-    .attr("y", 70)
+    .attr("x", 210)
+    .attr("y", 50)
     .text("100%")
 
   d3.queue()
@@ -141,20 +127,10 @@
       .reduce( (a,b) => a.concat(b))
     ));
 
-
     // Obtaining list of neighborhoods
     var neighborhoods = Array.from(new Set(
       restaurants.map(d => d.neighborhood)
     ));
-
-    // populating dropdown
-    d3.select("#dropdown")
-      .selectAll("option")
-      .data(neighborhoods)
-      .enter()
-      .append("option")
-      .attr("value", function(option) { return option; })
-      .text(function(option) { return option; });
 
     // Assigning voronoi regions for each restaurant
     var voronoi = d3.voronoi()
@@ -209,9 +185,8 @@
       .data(geojson.features)
       .enter()
       .append("path")
-      .attr("stroke", "white")
-      .attr("stroke-width", "2px")
-      .attr("fill", (d, i) => "#e0e0e0")
+      .attr("stroke", "black")
+      .attr("fill", (d, i) => "#ccc")
       .attr("class", "district")
       .attr("d", geopath);
 
