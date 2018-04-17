@@ -31,7 +31,6 @@
     </div>
     <!-- TODO: Delete before final submission-->
   </div>
-    <button id="test"> jiggle </button>
   </div>
 </body>
 
@@ -167,13 +166,6 @@
         zoomlbl.text(Math.round(scale * 100) + "%");
 
       }));
-
-    // TODO delete? Jiggle button effect
-    d3.select("#test").on("click", function() {
-      g.selectAll("circle")
-        .attr("cx", (x => Math.random() * radius / scale + x.x_proj))
-        .attr("cy", (x => Math.random() * radius / scale + x.y_proj));
-    });
 
     var districts = g.selectAll(".district")
       .data(geojson.features)
