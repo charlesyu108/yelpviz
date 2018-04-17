@@ -156,11 +156,6 @@
       .attr("value", function(option) { return option; })
       .text(function(option) { return option; });
 
-    var drop_down = d3.select("#dropdown");
-    drop_down.on("change", function() {
-
-    });
-
     // Assigning voronoi regions for each restaurant
     var voronoi = d3.voronoi()
       .extent([
