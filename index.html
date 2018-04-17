@@ -6,6 +6,7 @@
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Playfair+Display|Roboto" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cormorant+Garamond|EB+Garamond" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="styles.css"/>
 </head>
 
@@ -22,9 +23,13 @@
   </div> -->
 
   <!--dropdown-->
-  <select id="dropdown"></select>
+    <div class="row location">
+        <p id="location_header">Choose a location: </p>
+        <select id="dropdown"></select>
+      </div>
+    </div>
 
-  <div>
+  <div class="viz">
     <svg id="map_svg" />
     <div id="pinDiv">
       <div id = "pinDivHeader">
@@ -60,7 +65,7 @@
   var height = 600;
 
   const radius = 7;
-  const districtLabelFontSz = 20;
+  const districtLabelFontSz = 12;
 
   var svg = d3.select("#map_svg")
     .attr("width", width)
@@ -80,15 +85,16 @@
   const geopath = d3.geoPath()
     .projection(projection);
 
-  // TODO: Replace this with some nice graphic or icon
-  svg.append("text")
+  svg.append("svg:image")
     .attr("x", 50)
     .attr("y", 50)
-    .text("Pan & Zoom to explore")
+    .attr('width', "30px")
+    .attr("xlink:href", "media/zoom-in.png")
+    // .text("Pan & Zoom to explore")
 
   var zoomlbl = svg.append("text")
-    .attr("x", 210)
-    .attr("y", 50)
+    .attr("x", 90)
+    .attr("y", 70)
     .text("100%")
 
   d3.queue()
@@ -140,17 +146,19 @@
       restaurants.map(d => d.neighborhood)
     ));
 
-    console.log(neighborhoods);
-
     // populating dropdown
-    var dropd3 = d3.select("#dropdown")
+    d3.select("#dropdown")
       .selectAll("option")
       .data(neighborhoods)
       .enter()
       .append("option")
-      .attr("value", function(option) { return option.value; })
+      .attr("value", function(option) { return option; })
       .text(function(option) { return option; });
 
+    var drop_down = d3.select("#dropdown");
+    drop_down.on("change", function() {
+
+    });
 
     // Assigning voronoi regions for each restaurant
     var voronoi = d3.voronoi()
@@ -205,8 +213,9 @@
       .data(geojson.features)
       .enter()
       .append("path")
-      .attr("stroke", "black")
-      .attr("fill", (d, i) => "#ccc")
+      .attr("stroke", "white")
+      .attr("stroke-width", "2px")
+      .attr("fill", (d, i) => "#e0e0e0")
       .attr("class", "district")
       .attr("d", geopath);
 

@@ -1,16 +1,43 @@
 
 h1 {
-  font-family: 'Playfair Display', 'serif';
-  font-weight: lighter;
+  font-family: 'Helvetica Neue';
   text-align: center;
   padding-top: 150px;
   font-size: 48px;
   position: center;
 }
 
+p {
+  color: gray;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-left: 100px;
+}
+
+.location_header {
+  display: inline;
+  padding-bottom: 10px;
+}
+
+.dropdown {
+  display: inline;
+  padding: 10px;
+  color: white;
+}
+
+.row {
+  margin-bottom: 50px;
+}
+
+
 svg{
   border: 1px solid black;
   float: left;
+
+}
+
+.viz {
+
 }
 
 .tooltip {
@@ -30,7 +57,7 @@ svg{
 }
 
 .districtLabel{
-
+  font-size: 10px;
 }
 
 /* BEGIN restaurant information div styles */
@@ -79,7 +106,8 @@ svg{
 
 #pinDivHeader {
   font-size: 1.5em;
-  border-bottom: 1px solid black;
+  font-family: 'Cormorant Garamond', 'serif';
+  /**border-bottom: 1px solid black;**/
 }
 
 /* TODO: TEST styles -- delete? */
@@ -90,8 +118,7 @@ svg{
 }
 
 body {
-  font-family: "Roboto", "sans-serif";
-  font-weight: lighter;
+  font-family: "Helvetica Neue", "sans-serif";
 }
 
 
