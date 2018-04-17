@@ -8,7 +8,17 @@
 </head>
 
 <body>
-  <div>
+  <div class="container title">
+    <h1>Gastronomia Boston</h1>
+    <p id="title-caption">Find the best eats in town.</p>
+  </div>
+
+  <div class="row location">
+    <p id="location_header">Choose a location: </p>
+    <select id="dropdown"></select>
+  </div>
+
+  <div class="viz">
     <svg id="map_svg" />
     <div id="pinDiv">
       <div id = "pinDivHeader">
@@ -35,18 +45,7 @@
   </div>
 </body>
 
-  <h1>Where to Eat in Boston</h1>
 
-  <div class="dropdown">
-    <button class="dropbtn">Choose a location</button>
-    <div class="dropdown-options">
-    </div>
-  </div>
-  
-<!-- <div id="search-bar-id">
-<input class="search-bar" type="text" placeholder="Search a cuisine type or restaurant name'&hellip;">
-<button class="search-button" type="submit" >Search</button>
-</div> -->
 
 <script>
   var width = 800;
@@ -131,6 +130,16 @@
     var neighborhoods = Array.from(new Set(
       restaurants.map(d => d.neighborhood)
     ));
+
+    // populating dropdown
+    d3.select("#dropdown")
+      .selectAll("option")
+      .data(neighborhoods)
+      .enter()
+      .append("option")
+      .attr("value", function(option) { return option; })
+      .text(function(option) { return option; });
+
 
     // Assigning voronoi regions for each restaurant
     var voronoi = d3.voronoi()
