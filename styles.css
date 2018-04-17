@@ -1,6 +1,6 @@
 
 h1 {
-  font-family: 'Helvetica Neue';
+  font-family: 'Georgia';
   text-align: center;
   padding-top: 150px;
   font-size: 48px;
@@ -12,6 +12,10 @@ p {
   padding-top: 10px;
   padding-right: 10px;
   padding-left: 100px;
+}
+
+#title-caption {
+  text-align: center;
 }
 
 .location_header {
@@ -37,6 +41,7 @@ svg{
 }
 
 .viz {
+  padding: 10px;
 
 }
 
@@ -57,7 +62,7 @@ svg{
 }
 
 .districtLabel{
-  font-size: 10px;
+
 }
 
 /* BEGIN restaurant information div styles */
@@ -106,7 +111,8 @@ svg{
 
 #pinDivHeader {
   font-size: 1.5em;
-  font-family: 'Cormorant Garamond', 'serif';
+  font-family: 'Georgia', 'serif';
+  font-weight: lighter;
   /**border-bottom: 1px solid black;**/
 }
 
