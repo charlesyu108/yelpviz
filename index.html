@@ -5,12 +5,16 @@
   <title>INFO 4310 HW4</title>
   <link rel="stylesheet" type="text/css" href="styles.css">
   <script src="https://d3js.org/d3.v4.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
 </head>
 
 <body>
   <div class="container title">
     <h1>Gastronomia Boston</h1>
-    <p id="title-caption">Find the best eats in town.</p>
+    <div class="fork-icon-div">
+      <img id="fork-icon" src="media/restaurant.png" alt="Fork and Knife">
+    </div>
+    <h2 id="title-caption">Find the best eats in town.</h2>
   </div>
 
   <div class="row location">
@@ -52,7 +56,7 @@
   var height = 600;
 
   const radius = 7;
-  const districtLabelFontSz = 20;
+  const districtLabelFontSz = 12;
 
   var svg = d3.select("#map_svg")
     .attr("width", width)
@@ -73,14 +77,21 @@
     .projection(projection);
 
   // TODO: Replace this with some nice graphic or icon
-  svg.append("text")
+  svg.append("svg:image")
     .attr("x", 50)
     .attr("y", 50)
-    .text("Pan & Zoom to explore")
+    .attr('width', "30px")
+    .attr("xlink:href", "media/zoom-in.png")
+    // .text("Pan & Zoom to explore")
+
+  svg.append("text")
+    .attr("x",50)
+    .attr("y", 35)
+    .text("Click a restaurant to pin it.")
 
   var zoomlbl = svg.append("text")
-    .attr("x", 210)
-    .attr("y", 50)
+    .attr("x", 90)
+    .attr("y", 70)
     .text("100%")
 
   d3.queue()
@@ -194,8 +205,8 @@
       .data(geojson.features)
       .enter()
       .append("path")
-      .attr("stroke", "black")
-      .attr("fill", (d, i) => "#ccc")
+      .attr("stroke", "white")
+      .attr("fill", (d, i) => "#d7d7d7")
       .attr("class", "district")
       .attr("d", geopath);
 
