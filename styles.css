@@ -3,13 +3,13 @@ h1 {
   font-family: 'Oswald';
   color: #363636;
   text-align: center;
-  padding-top: 100px;
+  padding-top: 40px;
   font-size: 48px;
 }
 
-img {
+#fork-icon {
   display: inline-block;
-  width: 30px;
+  width: 25px;
   position: relative;
   left: 690px;
   bottom: 5px;
@@ -26,9 +26,7 @@ h2 {
 p {
   display: inline;
   color: gray;
-  padding-top: 10px;
-  padding-right: 10px;
-  padding-left: 100px;
+  margin-left: 20px;
 }
 
 body {
@@ -44,15 +42,21 @@ body {
 .dropdown {
   display: inline;
   padding: 10px;
-  color: white;
+}
+
+select {
+  font-family: "Oswald";
+  font-size: 14px;
+  padding: 5px;
+  -webkit-appearance: none;
 }
 
 .row {
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 
 
-svg{
+#map_svg {
   border: 2px solid #363636;
   float: left;
 }
@@ -94,7 +98,7 @@ svg{
   font-family: "Oswald";
 }
 
-.info rating::before{
+.info rating::before {
   content: "Rating: ";
   font-style: italic;
 }
@@ -113,7 +117,6 @@ svg{
   font-size: 1.5em;
 }
 /* END restaurant information div styles */
-
 
 .pinnedInfo {
   margin-top: 10px;
@@ -140,8 +143,25 @@ svg{
   border-bottom: 2px solid #363636;
 }
 
+<<<<<<< HEAD
+button {
+  border: none;
+  color: #363636;
+  font-size: 14px;
+  padding: 3px;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* TODO: TEST styles -- delete? */
+.polygons {
+  fill: none;
+  stroke: white;
+  stroke-width: 1px;
+=======
 .button-inactive {
   color: blue;
+>>>>>>> b5d485ad63876d75f84a1a309d15d895b9117b30
 }
 
 .button-active {
