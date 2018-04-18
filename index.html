@@ -153,7 +153,12 @@
       .append("button")
       .html(d)
       .attr("value", d)
-      .attr("class", _ => d == "All" ? "button-active" : "button-inactive"));
+      .attr("id", "button"+d)
+      .attr("class", _ => d == "All" ? "button-active cuisine-button" : "button-inactive cuisine-button")
+      .on("click", buttonClicked)
+      );
+
+    var allCuisinesButton = d3.select("#buttonAll");
 
     // populating dropdown
     d3.select("#dropdown-location")
@@ -263,30 +268,66 @@
       .html("(" + (document.getElementById("pinDiv").children.length - 1) + ")");
     }
 
+    function buttonClicked(d){
+      var currButton = d3.select(this);
+      var allButtonSelected = allCuisinesButton.classed('button-active');
+
+      if (currButton.attr("id") == "buttonAll") {
+        d3.selectAll(".button-active")
+        .classed("button-inactive", true)
+        .classed("button-active", false);
+        
+        allCuisinesButton.classed("button-inactive", false);
+        allCuisinesButton.classed("button-active", true);
+      }
+      else if (currButton.classed("button-inactive")) {
+        currButton.classed("button-active", true)
+        currButton.classed("button-inactive", false)
+        if (currButton != allButtonSelected) {
+          allCuisinesButton.classed("button-inactive", true)
+          allCuisinesButton.classed("button-active", false)
+        }
+      }
+      else {
+        currButton.classed("button-active", false)
+        currButton.classed("button-inactive", true)
+        if (d3.selectAll(".button-active").size() == 0){
+          allCuisinesButton.classed("button-inactive", false)
+          allCuisinesButton.classed("button-active", true)
+        }
+      }
+
+      filterAction();
+    }
+
     function filterAction(d){
 
       var sel = document.getElementById('dropdown-location');
       var location = sel.options[sel.selectedIndex].value;
 
-      sel = document.getElementById('dropdown-cuisine');
-      var cuisine = sel.options[sel.selectedIndex].value;
+      var cuisine_buttons = document.querySelectorAll(".cuisine-button");
+      var active_cuisines = Array.from(cuisine_buttons).filter(d => d.classList.contains("button-active")).map(d => d.value)
 
-      function combine_filters (loc, cus) {
-        var f_1 = (loc == "All") ?  (d => true) : (d => d.neighborhood == loc);
-        var f_2 = (cus == "All") ? (d => true) : (d => d.categories.indexOf(cus) > -1);
+      function combine_filters (location, cuisines) {
+        function loc_f(loc){ return (loc == "All") ?  (d => true) : (d => (loc == d.neighborhood))};
+        function cus_f(cus){ return (cus == "All") ? (d => true) : (d => d.categories.indexOf(cus) > -1)};
 
-        return (d => f_1(d) && f_2(d));
+        var to_apply = cuisines.map(c => cus_f(c));
+        var cusineORfilter = to_apply.reduce( (a,b) => function (arg) { return a (arg) || b (arg) });
+
+        return (arg => cusineORfilter(arg) && loc_f(location)(arg))
+
+
+        // to_apply.unshift(loc_f(location));
+        // return to_apply.reduce( (a,b) => function (arg) { return a (arg) || b (arg) });
       }
 
-      filter_f = combine_filters(location, cuisine);
+      filter_f = combine_filters(location, active_cuisines);
 
       g.selectAll(".restaurant")
       .attr("show", d => filter_f(d) ? true : false)
       .attr("r", d => filter_f(d) ? radius/scale : 0);
     }
-
-    console.log(restaurants);
-    console.log(geojson);
 
     function makeInfo(d) {
       return `
