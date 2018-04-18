@@ -23,28 +23,28 @@
     <select id="dropdown-location"></select>
   </div>
 
-  <div id = "cuisine-buttons-div"> </div>
+  <div id="cuisine-buttons-div"> </div>
 
   <div class="viz">
     <svg id="map_svg" />
     <div id="pinDiv">
-      <div id = "pinDivHeader">
-         <b> Pinned Places </b> <span id = "pinnedCount"> (1) </span>
-       </div>
-      <div class ="pinnedInfo">
-        <button onclick = "deleteDiv(this)"> X </button>
-      <div class="pinned">
-        <div class="info">
-          <title> EXAMPLE: Wheelhouse </title>
-          <addr> 63 Broad St, Financial District, Boston, MA 02109 </addr>
-          <hr>
-          <cats> Breakfast & Brunch, Burgers, Sandwiches</cats>
-          <rating> 4.5 </rating>
-          <snippet> After going to Wheelhouse, you'll never order a Dunkin Donuts' breakfast sandwich ever again. Well, you might, but you won't enjoy it. This place has the...</snippet>
+      <div id="pinDivHeader">
+        <b> Pinned Places </b> <span id="pinnedCount"> (1) </span>
+      </div>
+      <div class="pinnedInfo">
+        <button onclick="deleteDiv(this)"> X </button>
+        <div class="pinned">
+          <div class="info">
+            <title> EXAMPLE: Wheelhouse </title>
+            <addr> 63 Broad St, Financial District, Boston, MA 02109 </addr>
+            <hr>
+            <cats> Breakfast & Brunch, Burgers, Sandwiches</cats>
+            <rating> 4.5 </rating>
+            <snippet> After going to Wheelhouse, you'll never order a Dunkin Donuts' breakfast sandwich ever again. Well, you might, but you won't enjoy it. This place has the...</snippet>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   </div>
 </body>
 
@@ -75,17 +75,17 @@
     .projection(projection);
 
   var color = d3.scaleLinear().domain([1, 5])
-      .interpolate(d3.interpolateHcl)
-      .range([d3.rgb("#FFFC22"), d3.rgb('#EF2525')]);
+    .interpolate(d3.interpolateHcl)
+    .range([d3.rgb("#FFFC22"), d3.rgb('#EF2525')]);
 
   var legend = d3.select("#map_svg").append("g");
 
   legend.append("text")
-  .attr("x", 50)
-  .attr("y", 110)
-  .text("Rating");
+    .attr("x", 50)
+    .attr("y", 110)
+    .text("Rating");
 
-  [1,2,3,4,5].forEach( d =>
+  [1, 2, 3, 4, 5].forEach(d =>
     legend
     .append("rect")
     .attr("height", 20)
@@ -96,7 +96,7 @@
     .style("fill", color(d))
   );
 
-  [1,2,3,4,5].forEach( d =>
+  [1, 2, 3, 4, 5].forEach(d =>
     legend
     .append("text")
     .text(d)
@@ -111,7 +111,7 @@
     .attr("xlink:href", "media/zoom-in.png")
 
   svg.append("text")
-    .attr("x",50)
+    .attr("x", 50)
     .attr("y", 35)
     .text("Click a restaurant to pin it.")
 
@@ -161,7 +161,7 @@
     // Obtaining list of categories
     var categories = Array.from(new Set(
       restaurants.map(d => d.categories)
-      .reduce( (a,b) => a.concat(b))
+      .reduce((a, b) => a.concat(b))
     ));
 
     // Obtaining list of neighborhoods
@@ -172,15 +172,15 @@
     categories.unshift("All");
     neighborhoods.unshift("All");
 
-    categories.forEach( d =>
+    categories.forEach(d =>
       d3.select("#cuisine-buttons-div")
       .append("button")
       .html(d)
       .attr("value", d)
-      .attr("id", "button"+d)
+      .attr("id", "button" + d)
       .attr("class", _ => d == "All" ? "button-active cuisine-button" : "button-inactive cuisine-button")
       .on("click", buttonClicked)
-      );
+    );
 
     var allCuisinesButton = d3.select("#buttonAll");
 
@@ -190,25 +190,17 @@
       .data(neighborhoods)
       .enter()
       .append("option")
-      .attr("value", function(option) { return option; })
-      .text(function(option) { return option; });
+      .attr("value", function(option) {
+        return option;
+      })
+      .text(function(option) {
+        return option;
+      });
 
-    // populating dropdown
-    d3.select("#dropdown-cuisine")
-      .selectAll("option")
-      .data(categories)
-      .enter()
-      .append("option")
-      .attr("value", function(option) { return option; })
-      .text(function(option) { return option; });
-
-      d3.select("#dropdown-location")
+    d3.select("#dropdown-location")
       .on("change", filterAction);
 
-      d3.select("#dropdown-cuisine")
-      .on("change", filterAction);
-
-      var filter_f = (d => true);
+    var filter_f = (d => true);
 
     // Scale factor of zoom
     var scale = 1;
@@ -229,7 +221,7 @@
         g.attr("transform", d3.event.transform)
 
         g.selectAll("circle")
-          .attr("r", d => filter_f(d) ? radius/scale : 0);
+          .attr("r", d => filter_f(d) ? radius / scale : 0);
 
         g.selectAll("path")
           .style("stroke-width", 1 / scale);
@@ -291,33 +283,31 @@
       d3.select("#pinDiv")
         .html(d3.select("#pinDiv").html() + makePinnedInfo(d));
       d3.select("#pinnedCount")
-      .html("(" + (document.getElementById("pinDiv").children.length - 1) + ")");
+        .html("(" + (document.getElementById("pinDiv").children.length - 1) + ")");
     }
 
-    function buttonClicked(d){
+    function buttonClicked(d) {
       var currButton = d3.select(this);
       var allButtonSelected = allCuisinesButton.classed('button-active');
 
       if (currButton.attr("id") == "buttonAll") {
         d3.selectAll(".button-active")
-        .classed("button-inactive", true)
-        .classed("button-active", false);
+          .classed("button-inactive", true)
+          .classed("button-active", false);
 
         allCuisinesButton.classed("button-inactive", false);
         allCuisinesButton.classed("button-active", true);
-      }
-      else if (currButton.classed("button-inactive")) {
+      } else if (currButton.classed("button-inactive")) {
         currButton.classed("button-active", true)
         currButton.classed("button-inactive", false)
         if (currButton != allButtonSelected) {
           allCuisinesButton.classed("button-inactive", true)
           allCuisinesButton.classed("button-active", false)
         }
-      }
-      else {
+      } else {
         currButton.classed("button-active", false)
         currButton.classed("button-inactive", true)
-        if (d3.selectAll(".button-active").size() == 0){
+        if (d3.selectAll(".button-active").size() == 0) {
           allCuisinesButton.classed("button-inactive", false)
           allCuisinesButton.classed("button-active", true)
         }
@@ -326,7 +316,7 @@
       filterAction();
     }
 
-    function filterAction(d){
+    function filterAction(d) {
 
       var sel = document.getElementById('dropdown-location');
       var location = sel.options[sel.selectedIndex].value;
@@ -334,12 +324,19 @@
       var cuisine_buttons = document.querySelectorAll(".cuisine-button");
       var active_cuisines = Array.from(cuisine_buttons).filter(d => d.classList.contains("button-active")).map(d => d.value)
 
-      function combine_filters (location, cuisines) {
-        function loc_f(loc){ return (loc == "All") ?  (d => true) : (d => (loc == d.neighborhood))};
-        function cus_f(cus){ return (cus == "All") ? (d => true) : (d => d.categories.indexOf(cus) > -1)};
+      function combine_filters(location, cuisines) {
+        function loc_f(loc) {
+          return (loc == "All") ? (d => true) : (d => (loc == d.neighborhood))
+        };
+
+        function cus_f(cus) {
+          return (cus == "All") ? (d => true) : (d => d.categories.indexOf(cus) > -1)
+        };
 
         var to_apply = cuisines.map(c => cus_f(c));
-        var cusineORfilter = to_apply.reduce( (a,b) => function (arg) { return a (arg) || b (arg) });
+        var cusineORfilter = to_apply.reduce((a, b) => function(arg) {
+          return a(arg) || b(arg)
+        });
 
         return (arg => cusineORfilter(arg) && loc_f(location)(arg));
       }
@@ -347,8 +344,8 @@
       filter_f = combine_filters(location, active_cuisines);
 
       g.selectAll(".restaurant")
-      .attr("show", d => filter_f(d) ? true : false)
-      .attr("r", d => filter_f(d) ? radius/scale : 0);
+        .attr("show", d => filter_f(d) ? true : false)
+        .attr("r", d => filter_f(d) ? radius / scale : 0);
     }
 
     function makeInfo(d) {
@@ -364,7 +361,7 @@
       `
     }
 
-    function makePinnedInfo(d){
+    function makePinnedInfo(d) {
       return `
       <div class = "pinnedInfo">
         <button onclick="deleteDiv(this)"> x </button>
@@ -374,14 +371,11 @@
     }
   }
 
-  function deleteDiv(button){
+  function deleteDiv(button) {
     d3.select(button.parentNode).remove();
     d3.select("#pinnedCount")
-    .html("(" + (document.getElementById("pinDiv").children.length - 1) + ")");
+      .html("(" + (document.getElementById("pinDiv").children.length - 1) + ")");
   }
-
-
 </script>
-
 
 </html>
