@@ -22,11 +22,6 @@
     <p id="location_header">Choose a location: </p>
     <select id="dropdown-location"></select>
   </div>
-<!--
-  <div class="row cuisine">
-    <p id="cuisine_header">Choose a cuisine: </p>
-    <select id="dropdown-cuisine"></select>
-  </div> -->
 
   <div id = "cuisine-buttons-div"> </div>
 
@@ -79,7 +74,34 @@
   const geopath = d3.geoPath()
     .projection(projection);
 
-  var colorArray = ["red", "orange", "yellow"];
+  var color = d3.scaleLinear().domain([1, 5])
+      .interpolate(d3.interpolateHcl)
+      .range([d3.rgb("#FFFC22"), d3.rgb('#EF2525')]);
+
+  var legend = d3.select("#map_svg").append("g");
+
+  legend.append("text")
+  .attr("x", 50)
+  .attr("y", 110)
+  .text("Rating");
+
+  [1,2,3,4,5].forEach( d =>
+    legend
+    .append("rect")
+    .attr("height", 20)
+    .attr("width", 20)
+    .attr("x", 30 + d * 20)
+    .attr("y", 115)
+    .style("fill", color(d))
+  );
+
+  [1,2,3,4,5].forEach( d =>
+    legend
+    .append("text")
+    .text(d)
+    .attr("x", 30 + d * 22)
+    .attr("y", 135)
+  );
 
   svg.append("svg:image")
     .attr("x", 50)
@@ -154,7 +176,12 @@
       .append("button")
       .html(d)
       .attr("value", d)
-      .attr("class", _ => d == "All" ? "button-active" : "button-inactive"));
+      .attr("id", "button"+d)
+      .attr("class", _ => d == "All" ? "button-active cuisine-button" : "button-inactive cuisine-button")
+      .on("click", buttonClicked)
+      );
+
+    var allCuisinesButton = d3.select("#buttonAll");
 
     // populating dropdown
     d3.select("#dropdown-location")
@@ -236,9 +263,7 @@
       .data(restaurants).enter()
       .append("circle")
       .attr("class", "restaurant")
-      .style("fill", function() {
-        return colorArray[Math.floor(Math.random() * colorArray.length)];
-      })
+      .style("fill", d => color(d.rating))
       .attr("cx", d => d.x_proj)
       .attr("cy", d => d.y_proj)
       .attr("r", radius)
@@ -268,30 +293,62 @@
       .html("(" + (document.getElementById("pinDiv").children.length - 1) + ")");
     }
 
+    function buttonClicked(d){
+      var currButton = d3.select(this);
+      var allButtonSelected = allCuisinesButton.classed('button-active');
+
+      if (currButton.attr("id") == "buttonAll") {
+        d3.selectAll(".button-active")
+        .classed("button-inactive", true)
+        .classed("button-active", false);
+
+        allCuisinesButton.classed("button-inactive", false);
+        allCuisinesButton.classed("button-active", true);
+      }
+      else if (currButton.classed("button-inactive")) {
+        currButton.classed("button-active", true)
+        currButton.classed("button-inactive", false)
+        if (currButton != allButtonSelected) {
+          allCuisinesButton.classed("button-inactive", true)
+          allCuisinesButton.classed("button-active", false)
+        }
+      }
+      else {
+        currButton.classed("button-active", false)
+        currButton.classed("button-inactive", true)
+        if (d3.selectAll(".button-active").size() == 0){
+          allCuisinesButton.classed("button-inactive", false)
+          allCuisinesButton.classed("button-active", true)
+        }
+      }
+
+      filterAction();
+    }
+
     function filterAction(d){
 
       var sel = document.getElementById('dropdown-location');
       var location = sel.options[sel.selectedIndex].value;
 
-      sel = document.getElementById('dropdown-cuisine');
-      var cuisine = sel.options[sel.selectedIndex].value;
+      var cuisine_buttons = document.querySelectorAll(".cuisine-button");
+      var active_cuisines = Array.from(cuisine_buttons).filter(d => d.classList.contains("button-active")).map(d => d.value)
 
-      function combine_filters (loc, cus) {
-        var f_1 = (loc == "All") ?  (d => true) : (d => d.neighborhood == loc);
-        var f_2 = (cus == "All") ? (d => true) : (d => d.categories.indexOf(cus) > -1);
+      function combine_filters (location, cuisines) {
+        function loc_f(loc){ return (loc == "All") ?  (d => true) : (d => (loc == d.neighborhood))};
+        function cus_f(cus){ return (cus == "All") ? (d => true) : (d => d.categories.indexOf(cus) > -1)};
 
-        return (d => f_1(d) && f_2(d));
+        var to_apply = cuisines.map(c => cus_f(c));
+        var cusineORfilter = to_apply.reduce( (a,b) => function (arg) { return a (arg) || b (arg) });
+
+        return (arg => cusineORfilter(arg) && loc_f(location)(arg));
       }
 
-      filter_f = combine_filters(location, cuisine);
+      filter_f = combine_filters(location, active_cuisines);
 
       g.selectAll(".restaurant")
       .attr("show", d => filter_f(d) ? true : false)
       .attr("r", d => filter_f(d) ? radius/scale : 0);
     }
-
-    console.log(restaurants);
-    console.log(geojson);
 
     function makeInfo(d) {
       return `

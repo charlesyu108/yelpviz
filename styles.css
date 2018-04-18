@@ -120,8 +120,6 @@ select {
 
 .pinnedInfo {
   margin-top: 10px;
-/*  border-right: 2px solid #363636;
-  border-left: 2px solid #363636;*/
   border-bottom: 2px solid #363636;
 }
 
@@ -164,5 +162,5 @@ button {
 }
 
 .button-active {
-  color: ;
+  color: red;
 }
