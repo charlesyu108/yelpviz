@@ -140,9 +140,10 @@ svg{
   border-bottom: 2px solid #363636;
 }
 
-/* TODO: TEST styles -- delete? */
-.polygons {
-  fill: none;
-  stroke: white;
-  stroke-width: 1px;
+.button-inactive {
+  color: blue;
+}
+
+.button-active {
+  color:red;
 }
