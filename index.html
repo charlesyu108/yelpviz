@@ -20,23 +20,28 @@
 
   <div class="row">
     <p id="location_header">Choose a location: </p>
-    <select id="dropdown"></select>
+    <select id="dropdown-location"></select>
   </div>
+<!--
+  <div class="row cuisine">
+    <p id="cuisine_header">Choose a cuisine: </p>
+    <select id="dropdown-cuisine"></select>
+  </div> -->
+
+  <div id = "cuisine-buttons-div"> </div>
 
   <div class="viz">
     <svg id="map_svg" />
     <div id="pinDiv">
       <div id = "pinDivHeader">
-         <b> Pinned Places </b> <span id = "pinnedCount"> (0) </span>
+         <b> Pinned Places </b> <span id = "pinnedCount"> (1) </span>
        </div>
-
-      <!-- TODO: Delete before final submission-->
       <div class ="pinnedInfo">
         <button onclick = "deleteDiv(this)"> X </button>
       <div class="pinned">
         <div class="info">
-          <title> [SAMPLE] Wheelhouse </title>
-          <addr> 63 Broad St, Boston, MA 02109 </addr>
+          <title> EXAMPLE: Wheelhouse </title>
+          <addr> 63 Broad St, Financial District, Boston, MA 02109 </addr>
           <hr>
           <cats> Breakfast & Brunch, Burgers, Sandwiches</cats>
           <rating> 4.5 </rating>
@@ -44,9 +49,7 @@
         </div>
       </div>
     </div>
-    <!-- TODO: Delete before final submission-->
   </div>
-    <button id="test"> jiggle </button>
   </div>
 </body>
 
@@ -163,8 +166,18 @@
       restaurants.map(d => d.neighborhood)
     ));
 
+    categories.unshift("All");
+    neighborhoods.unshift("All");
+
+    categories.forEach( d =>
+      d3.select("#cuisine-buttons-div")
+      .append("button")
+      .html(d)
+      .attr("value", d)
+      .attr("class", _ => d == "All" ? "button-active" : "button-inactive"));
+
     // populating dropdown
-    d3.select("#dropdown")
+    d3.select("#dropdown-location")
       .selectAll("option")
       .data(neighborhoods)
       .enter()
@@ -172,15 +185,22 @@
       .attr("value", function(option) { return option; })
       .text(function(option) { return option; });
 
+    // populating dropdown
+    d3.select("#dropdown-cuisine")
+      .selectAll("option")
+      .data(categories)
+      .enter()
+      .append("option")
+      .attr("value", function(option) { return option; })
+      .text(function(option) { return option; });
 
-    // Assigning voronoi regions for each restaurant
-    var voronoi = d3.voronoi()
-      .extent([
-        [-1, -1],
-        [width + 1, height + 1]
-      ]);
-    var polygons = voronoi.polygons(restaurants.map(d => [d.x_proj, d.y_proj]));
-    restaurants.forEach((d, i) => d["voronoi"] = polygons[i]);
+      d3.select("#dropdown-location")
+      .on("change", filterAction);
+
+      d3.select("#dropdown-cuisine")
+      .on("change", filterAction);
+
+      var filter_f = (d => true);
 
     // Scale factor of zoom
     var scale = 1;
@@ -192,7 +212,6 @@
 
         var scalere = /scale\((\d.*\d*)+\)/
 
-        // TODO: TEST CODE TO REMOVE?
         if (g.attr("transform") == null) {
           scale = 1;
         } else {
@@ -201,9 +220,8 @@
         }
         g.attr("transform", d3.event.transform)
 
-        // TODO: may want to remove?
         g.selectAll("circle")
-          .attr("r", radius / scale);
+          .attr("r", d => filter_f(d) ? radius/scale : 0);
 
         g.selectAll("path")
           .style("stroke-width", 1 / scale);
@@ -215,13 +233,6 @@
 
       }));
 
-    // TODO delete? Jiggle button effect
-    d3.select("#test").on("click", function() {
-      g.selectAll("circle")
-        .attr("cx", (x => Math.random() * radius / scale + x.x_proj))
-        .attr("cy", (x => Math.random() * radius / scale + x.y_proj));
-    });
-
     var districts = g.selectAll(".district")
       .data(geojson.features)
       .enter()
@@ -230,8 +241,6 @@
       .attr("fill", (d, i) => "#d7d7d7")
       .attr("class", "district")
       .attr("d", geopath);
-
-    console.log(d3.selectAll(".district"));
 
     g.selectAll(".districtLabel")
       .data(geojson.features)
@@ -242,17 +251,6 @@
       .text(d => d.properties.name)
       .attr("class", "districtLabel")
       .style("font-size", districtLabelFontSz);
-
-    // var color = d3.scaleOrdinal(d3.schemeCategory20);
-    // g.append("g")
-    //   .attr("class", "polygons")
-    //   .selectAll("path")
-    //   .data(restaurants)
-    //   .enter()
-    //   .append("path")
-    //   .style("opacity", 0.3)
-    //   .style("fill", (d,i) => color(i))
-    //   .call(drawPolygon);
 
     g.selectAll("circle")
       .data(restaurants).enter()
@@ -284,11 +282,32 @@
     }
 
     function clickActions(d) {
-      console.log(d);
       d3.select("#pinDiv")
         .html(d3.select("#pinDiv").html() + makePinnedInfo(d));
       d3.select("#pinnedCount")
       .html("(" + (document.getElementById("pinDiv").children.length - 1) + ")");
+    }
+
+    function filterAction(d){
+
+      var sel = document.getElementById('dropdown-location');
+      var location = sel.options[sel.selectedIndex].value;
+
+      sel = document.getElementById('dropdown-cuisine');
+      var cuisine = sel.options[sel.selectedIndex].value;
+
+      function combine_filters (loc, cus) {
+        var f_1 = (loc == "All") ?  (d => true) : (d => d.neighborhood == loc);
+        var f_2 = (cus == "All") ? (d => true) : (d => d.categories.indexOf(cus) > -1);
+
+        return (d => f_1(d) && f_2(d));
+      }
+
+      filter_f = combine_filters(location, cuisine);
+
+      g.selectAll(".restaurant")
+      .attr("show", d => filter_f(d) ? true : false)
+      .attr("r", d => filter_f(d) ? radius/scale : 0);
     }
 
     console.log(restaurants);
@@ -315,16 +334,6 @@
       </div>
       `
     }
-
-    // This function is from: https://bl.ocks.org/mbostock/4060366
-    function drawPolygon(polygon) {
-      console.log(polygon);
-      polygon
-        .attr("d", function(d) {
-          return d.voronoi ? "M" + d.voronoi.join("L") + "Z" : null;
-        });
-    }
-
   }
 
   function deleteDiv(button){
