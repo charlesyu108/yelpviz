@@ -161,8 +161,8 @@ button {
 }
 
 .button-inactive {
-  color: blue;
+}
 
 .button-active {
-  color:red;
+  color:blue;
 }

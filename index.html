@@ -300,7 +300,7 @@
         d3.selectAll(".button-active")
         .classed("button-inactive", true)
         .classed("button-active", false);
-        
+
         allCuisinesButton.classed("button-inactive", false);
         allCuisinesButton.classed("button-active", true);
       }
@@ -339,11 +339,7 @@
         var to_apply = cuisines.map(c => cus_f(c));
         var cusineORfilter = to_apply.reduce( (a,b) => function (arg) { return a (arg) || b (arg) });
 
-        return (arg => cusineORfilter(arg) && loc_f(location)(arg))
-
-
-        // to_apply.unshift(loc_f(location));
-        // return to_apply.reduce( (a,b) => function (arg) { return a (arg) || b (arg) });
+        return (arg => cusineORfilter(arg) && loc_f(location)(arg));
       }
 
       filter_f = combine_filters(location, active_cuisines);
