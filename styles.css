@@ -143,26 +143,25 @@ select {
   border-bottom: 2px solid #363636;
 }
 
-<<<<<<< HEAD
+#cuisine-buttons-div {
+  margin: 20px;
+  margin-right: 40px;
+}
+
 button {
-  border: none;
+  border:solid;
+  border-color: white;
+  border-bottom: 1px solid gray;
   color: #363636;
   font-size: 14px;
   padding: 3px;
   text-align: center;
-  text-decoration: none;
+  margin-right: 10px;
+  margin-bottom: 5px;
 }
 
-/* TODO: TEST styles -- delete? */
-.polygons {
-  fill: none;
-  stroke: white;
-  stroke-width: 1px;
-=======
 .button-inactive {
   color: blue;
->>>>>>> b5d485ad63876d75f84a1a309d15d895b9117b30
-}
 
 .button-active {
   color:red;
