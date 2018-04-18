@@ -81,30 +81,11 @@
 
   var colorArray = ["red", "orange", "yellow"];
 
-  var legend1 = d3.select(".row")
-  .append("svg")
-  .attr("width", 100)
-  .attr("height", 40)
-  .append("rect")
-  .attr("x", 25)
-  .attr("y", 25)
-  .attr("width", 30)
-  .attr("height", 20)
-  .style("fill", colorArray[2]);
-
-  // legend.append("rect")
-  //   .attr("x", 50)
-  //   .attr("y", 50)
-  //   .attr("width", 30)
-  //   .attr("height", 20)
-  //   .style("fill", colorArray[1]);
-
   svg.append("svg:image")
     .attr("x", 50)
     .attr("y", 50)
     .attr('width', "30px")
     .attr("xlink:href", "media/zoom-in.png")
-    // .text("Pan & Zoom to explore")
 
   svg.append("text")
     .attr("x",50)
