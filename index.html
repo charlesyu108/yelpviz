@@ -9,15 +9,16 @@
 </head>
 
 <body>
+
   <div class="container title">
     <h1>Gastronomia Boston</h1>
     <div class="fork-icon-div">
       <img id="fork-icon" src="media/restaurant.png" alt="Fork and Knife">
     </div>
-    <h2 id="title-caption">Find the best eats in town.</h2>
+    <h2 id="title-caption">Find the best eats in town. Fast.</h2>
   </div>
 
-  <div class="row location">
+  <div class="row">
     <p id="location_header">Choose a location: </p>
     <select id="dropdown"></select>
   </div>
@@ -31,10 +32,10 @@
 
       <!-- TODO: Delete before final submission-->
       <div class ="pinnedInfo">
-        <button onclick = "deleteDiv(this)"> x </button>
+        <button onclick = "deleteDiv(this)"> X </button>
       <div class="pinned">
         <div class="info">
-          <title> SAMPLE: Wheelhouse </title>
+          <title> [SAMPLE] Wheelhouse </title>
           <addr> 63 Broad St, Boston, MA 02109 </addr>
           <hr>
           <cats> Breakfast & Brunch, Burgers, Sandwiches</cats>
@@ -76,7 +77,26 @@
   const geopath = d3.geoPath()
     .projection(projection);
 
-  // TODO: Replace this with some nice graphic or icon
+  var colorArray = ["red", "orange", "yellow"];
+
+  var legend = d3.select(".row")
+  .append("svg")
+  .attr("width", 100)
+  .attr("height", 40)
+  .append("rect")
+  .attr("x", 25)
+  .attr("y", 25)
+  .attr("width", 30)
+  .attr("height", 20)
+  .style("fill", colorArray[2]);
+  
+  legend.append("rect")
+    .attr("x", 50)
+    .attr("y", 50)
+    .attr("width", 30)
+    .attr("height", 20)
+    .style("fill", colorArray[1]);
+
   svg.append("svg:image")
     .attr("x", 50)
     .attr("y", 50)
@@ -88,6 +108,7 @@
     .attr("x",50)
     .attr("y", 35)
     .text("Click a restaurant to pin it.")
+
 
   var zoomlbl = svg.append("text")
     .attr("x", 90)
@@ -237,12 +258,16 @@
       .data(restaurants).enter()
       .append("circle")
       .attr("class", "restaurant")
+      .style("fill", function() {
+        return colorArray[Math.floor(Math.random() * colorArray.length)];
+      })
       .attr("cx", d => d.x_proj)
       .attr("cy", d => d.y_proj)
       .attr("r", radius)
       .on("mouseover", mouseoverActions)
       .on("mouseout", mouseoutActions)
       .on("click", clickActions)
+
 
     function mouseoverActions(d) {
 
