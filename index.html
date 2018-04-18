@@ -22,11 +22,6 @@
     <p id="location_header">Choose a location: </p>
     <select id="dropdown-location"></select>
   </div>
-<!--
-  <div class="row cuisine">
-    <p id="cuisine_header">Choose a cuisine: </p>
-    <select id="dropdown-cuisine"></select>
-  </div> -->
 
   <div id = "cuisine-buttons-div"> </div>
 
@@ -79,25 +74,35 @@
   const geopath = d3.geoPath()
     .projection(projection);
 
-  var colorArray = ["red", "orange", "yellow"];
+  var color = d3.scaleLinear().domain([1, 5])
+      .interpolate(d3.interpolateHcl)
+      .range([d3.rgb("#FFFC22"), d3.rgb('#EF2525')]);
 
-  var legend1 = d3.select(".row")
-  .append("svg")
-  .attr("width", 100)
-  .attr("height", 40)
-  .append("rect")
-  .attr("x", 25)
-  .attr("y", 25)
-  .attr("width", 30)
-  .attr("height", 20)
-  .style("fill", colorArray[2]);
+  var legend = d3.select("#map_svg").append("g");
 
-  // legend.append("rect")
-  //   .attr("x", 50)
-  //   .attr("y", 50)
-  //   .attr("width", 30)
-  //   .attr("height", 20)
-  //   .style("fill", colorArray[1]);
+  legend.append("text")
+  .attr("x", 50)
+  .attr("y", 110)
+  .text("Rating");
+
+  [1,2,3,4,5].forEach( d =>
+    legend
+    .append("rect")
+    .attr("height", 20)
+    .attr("width", 20)
+    .attr("x", 30 + d * 20)
+    .attr("y", 115)
+    .style("fill", color(d))
+  );
+
+  [1,2,3,4,5].forEach( d =>
+    legend
+    .append("text")
+    .text(d)
+    .attr("x", 30 + d * 22)
+    .attr("y", 135)
+  );
+
 
   svg.append("svg:image")
     .attr("x", 50)
@@ -260,9 +265,7 @@
       .data(restaurants).enter()
       .append("circle")
       .attr("class", "restaurant")
-      .style("fill", function() {
-        return colorArray[Math.floor(Math.random() * colorArray.length)];
-      })
+      .style("fill", d => color(d.rating))
       .attr("cx", d => d.x_proj)
       .attr("cy", d => d.y_proj)
       .attr("r", radius)
